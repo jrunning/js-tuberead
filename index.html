@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="lib/jsDataView/src/jquery-1.4.4-binary-ajax.js"></script>
+    <script type="text/javascript" src="lib/jsDataView/src/jdataview.js"></script>
+    <script type="text/javascript">
+      // http://stackoverflow.com/questions/901115/get-querystring-values-with-jquery
+      function getParameterByName(query, name) {
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS  = "[\\?&]" + name + "=([^&#]*)"
+          , regex   = new RegExp(regexS)
+          , results = regex.exec(query)
+        ;
+
+        return results == null ? ""
+          : decodeURIComponent(results[1].replace(/\+/g, " "))
+        ;
+      }
+
+      function useVid(data) {
+        var view = new jDataView(data)
+          , thisBox
+        ;
+
+        // Do something interesting with all that data.
+        console.log("Video data loaded.")
+
+        /*
+        while(view.tell() < view.length) {
+          view.seek(view.tell() + 1);
+          thisBox = view.getString(4);
+          if(thisBox == 'trak') {
+            console.log(view.getString(4));
+          }
+        }
+        */
+      }
+
+      $(function() {
+        var vidId = 'aUB8l5H4ddA'
+          , infoUrl = 'http://www.youtube.com/get_video_info?'
+                    + 'video_id=' + vidId
+        ;
+
+        $.get(infoUrl, function(data) {
+          // console.log(data);
+          var fmtStreamMap = getParameterByName(data, 'fmt_stream_map').split(',')
+            , thisFmt = fmtStreamMap.pop()
+            , streamUri
+          ;
+
+          while(thisFmt && thisFmt.indexOf('5') == 0) {
+            thisFmt = fmtStreamMap.pop();
+          }
+
+          streamUri = thisFmt.split('|')[1];
+
+          $.get(streamUri, useVid, 'binary');
+        });
+
+      });
+    </script>
+  </head>
+</html>
