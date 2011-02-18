@@ -1,0 +1,3 @@
+[submodule "lib/jsDataView"]
+	path = lib/jsDataView
+	url = https://github.com/vjeux/jsDataView.git
